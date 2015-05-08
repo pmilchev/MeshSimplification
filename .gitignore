@@ -1,0 +1,6 @@
+Debug/main.obj
+*.tlog
+Debug/MeshSimplification.log
+Debug/vc120.pdb
+*.idb
+Debug/helm
