@@ -1,0 +1,31 @@
+10 easy steps to setup a clear project using only the source files.
+
+1. Create a new MS Visual Studio project:
+	
+2. Set upping the project(project / properties):
+	> Configuration Properties / VC++ Directories/ Include Directories / Edit / and add new line 
+	with the Dependencies/freeglut directory
+	> Configuration Properties / "C/C++" / General / Additional Include Dependencies / and add new 
+	line and select the "Dependencies" directory
+	> Configuration Properties / Linker / General / Additional Library Directories / Edit / and 
+	add "Dependencies/freeglut" directory
+	> Configuration Properties / Linker / Input / Additional Dependencies / Edit / and 
+	add freeglut.lib
+	
+3. Put a copy of "freeglut.dll" in the directory of the .exe file (probably /Debug)
+	
+Now you have a project that compiles. When ran, a flashing window shows and then it disappears. To 
+fix that run the "exe" through the "cmd"
+
+The program needs an input argument to work properly, the path to an "*.off" file describing the 
+mesh.
+1st Way: 
+	> open cmd
+	> navigate to the debug directory
+	> input in the console _the_name_of_the_project_.exe _the_name_of_the_mesh_file_.off
+2nd Way:
+	> Configuration Properties / Debugging / Working Directory/ Browse and select the Debug Dir
+	> Configuration Properties / Debugging / Command Arguments / Edit and add the name of the .off 
+	file you want to start with
+	
+	
