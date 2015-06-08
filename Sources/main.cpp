@@ -13,130 +13,6 @@
 #include "vector3.h"
 
 using namespace std;
-//
-//class Vector
-//{
-//public:
-//
-//	union
-//	{
-//		struct {
-//			float x, y, z;
-//		};
-//		float f[3];
-//	};
-//
-//	Vector() {};
-//	Vector(const Vector & other)
-//	{
-//		x = other.x;
-//		y = other.y;
-//		z = other.z;
-//	}
-//	Vector(float xx, float yy, float zz) : x(xx), y(yy), z(zz) {}
-//
-//	Vector & operator=(const Vector & other)
-//	{
-//		x = other.x;
-//		y = other.y;
-//		z = other.z;
-//		return *this;
-//	}
-//
-//	float operator*(const Vector & other) const
-//	{
-//		return x * other.x + y * other.y + z * other.z;
-//	}
-//
-//	Vector & operator^=(const Vector & other)
-//	{
-//		float tmp[3] = {
-//			y * other.z - z * other.y,
-//			z * other.x - x * other.z,
-//			x * other.y - y * other.x
-//		};
-//		for (int i = 0; i < 3; i++) f[i] = tmp[i];
-//		return *this;
-//	}
-//
-//	Vector operator^(const Vector & other)
-//	{
-//		Vector tmp(*this);
-//		return tmp ^= other;
-//	}
-//
-//	Vector & operator+=(const Vector & other)
-//	{
-//		for (int i = 0; i < 3; i++) f[i] += other.f[i];
-//		return *this;
-//	}
-//
-//	Vector operator+(const Vector & other) const
-//	{
-//		Vector tmp(*this);
-//		return tmp += other;
-//	}
-//
-//	Vector & operator-=(const Vector & other)
-//	{
-//		for (int i = 0; i < 3; i++) f[i] -= other.f[i];
-//		return *this;
-//	}
-//
-//	Vector operator-(const Vector & other) const
-//	{
-//		Vector tmp(*this);
-//		return tmp -= other;
-//	}
-//
-//	Vector & operator*=(float c)
-//	{
-//		x *= c;
-//		y *= c;
-//		z *= c;
-//		return *this;
-//	}
-//
-//	Vector operator*(float c) const
-//	{
-//		Vector tmp(*this);
-//		return tmp *= c;
-//	}
-//
-//	Vector & operator/=(float c)
-//	{
-//		x /= c;
-//		y /= c;
-//		z /= c;
-//		return *this;
-//	}
-//
-//	Vector operator/(float c) const
-//	{
-//		Vector tmp(*this);
-//		return tmp /= c;
-//	}
-//
-//	float len() const
-//	{
-//		return sqrtf(x*x + y*y + z*z);
-//	}
-//
-//	void normalize()
-//	{
-//		operator*(1 / len());
-//	}
-//
-//	bool operator!=(const Vector & other) const{
-//		for (int i = 0; i < 3; i++)
-//			if (f[i] != other.f[i]) return true;
-//		return false;
-//	}
-//
-//	bool operator==(const Vector & other) const{
-//		return !(*this != other);
-//	}
-//};
 
 Vector operator*(float c, const Vector & v)
 {
@@ -158,8 +34,19 @@ struct Triangle{
 	Triangle(vector<int> vertices, int color[3]){ this->vertices = vertices; this->color[0] = color[0]; this->color[1] = color[1]; this->color[2] = color[2]; };
 };
 
+class IMesh
+{
+};
+
+class IndexedFaceSet : public IMesh
+{
+public:
+	vector<Vector> m_Vertices;
+	vector<Triangle> m_Triangles;
+};
+
 // global data
-#define MAX_FIGURES 10
+static const unsigned MAX_FIGURES = 10;
 static vector<Vector> vertices[MAX_FIGURES];
 static vector<Triangle> triangles[MAX_FIGURES];
 static int figure;
@@ -220,7 +107,7 @@ void LoadOffFile(const string& name, vector<Vector>& vertices, vector<Triangle>&
 		minz = maxz = vertices[0].f[2];
 	}
 
-	for (int i = 1; i < vertices.size(); i++){
+	for (unsigned i = 1; i < vertices.size(); i++){
 		minx = min(minx, vertices[i].f[0]);
 		maxx = max(maxx, vertices[i].f[0]);
 		miny = min(miny, vertices[i].f[1]);
@@ -229,10 +116,10 @@ void LoadOffFile(const string& name, vector<Vector>& vertices, vector<Triangle>&
 		maxz = max(maxz, vertices[i].f[2]);
 	}
 
-	dx = (maxx + minx) / 2.0;
-	dy = (maxy + miny) / 2.0;
-	dz = (maxz + minz) / 2.0;
-	for (int i = 0; i < vertices.size(); i++){
+	dx = (maxx + minx) / 2.0f;
+	dy = (maxy + miny) / 2.0f;
+	dz = (maxz + minz) / 2.0f;
+	for (unsigned i = 0; i < vertices.size(); i++){
 		vertices[i].x -= dx;
 		vertices[i].y -= dy;
 		vertices[i].z -= dz;
@@ -249,7 +136,7 @@ int simple_triangulation(const vector<Vector>&  inVertices, const vector<Triangl
 	int isAlreadyTriangulated = 1;
 	for (unsigned long long i = 0; i < size; i++){
 		v[0] = inTriangles[i].vertices[0];
-		for (int k = 2; k < inTriangles[i].vertices.size(); k++){
+		for (unsigned k = 2; k < inTriangles[i].vertices.size(); k++){
 			v[1] = inTriangles[i].vertices[k - 1];
 			v[2] = inTriangles[i].vertices[k];
 			outTriangles.push_back(Triangle(v, c));
@@ -272,7 +159,7 @@ int decimation1(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 		minz = maxz = inVertices[0].f[2];
 	}
 	else return 1;
-	for (int i = 1; i < inVertices.size(); i++){
+	for (unsigned i = 1; i < inVertices.size(); i++){
 		minx = min(minx, inVertices[i].f[0]);
 		maxx = max(maxx, inVertices[i].f[0]);
 		miny = min(miny, inVertices[i].f[1]);
@@ -280,15 +167,15 @@ int decimation1(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 		minz = min(minz, inVertices[i].f[2]);
 		maxz = max(maxz, inVertices[i].f[2]);
 	}
-	dx = 0.01*(maxx - minx);
-	dy = 0.01*(maxy - miny);
-	dz = 0.01*(maxz - minz);
+	dx = 0.01f*(maxx - minx);
+	dy = 0.01f*(maxy - miny);
+	dz = 0.01f*(maxz - minz);
 
 	vector <int> in2out; in2out.resize(inVertices.size(), -1);
 	vector <int> outCounter;
 	outVertices.resize(0);
 	float x1, x2, y1, y2, z1, z2;
-	for (int i = 0; i < inVertices.size(); i++){
+	for (unsigned i = 0; i < inVertices.size(); i++){
 		if (in2out[i] != -1) continue;
 
 		outVertices.push_back(inVertices[i]);
@@ -298,7 +185,7 @@ int decimation1(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 		x1 = floor(inVertices[i].f[0] / dx) * dx; x2 = x1 + dx;
 		y1 = floor(inVertices[i].f[1] / dy) * dy; y2 = y1 + dy;
 		z1 = floor(inVertices[i].f[2] / dz) * dz; z2 = z1 + dz;
-		for (int j = i + 1; j < inVertices.size(); j++){
+		for (unsigned j = i + 1; j < inVertices.size(); j++){
 			if ((x1 < inVertices[j].f[0]) && (inVertices[j].f[0] <= x2) &&
 				(y1 < inVertices[j].f[1]) && (inVertices[j].f[1] <= y2) &&
 				(z1 < inVertices[j].f[2]) && (inVertices[j].f[2] <= z2))
@@ -313,7 +200,7 @@ int decimation1(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 		}
 	}
 	// davame realni stojnosti na novite vyrhove
-	for (int i = 0; i < outVertices.size(); i++){
+	for (unsigned i = 0; i < outVertices.size(); i++){
 		outVertices[i].f[0] /= outCounter[i];
 		outVertices[i].f[1] /= outCounter[i];
 		outVertices[i].f[2] /= outCounter[i];
@@ -321,7 +208,7 @@ int decimation1(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 
 	int a, b, c;
 	int color[3];
-	for (int i = 0; i < inTriangles.size(); i++){
+	for (unsigned i = 0; i < inTriangles.size(); i++){
 		a = in2out[inTriangles[i].vertices[0]];
 		b = in2out[inTriangles[i].vertices[1]];
 		c = in2out[inTriangles[i].vertices[2]];
@@ -339,15 +226,18 @@ int decimation1(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 	return 0;
 }
 
-#define VERTEX_CLASS_UNDEFINED -1
-#define VERTEX_CLASS_COMPLEX    0
-#define VERTEX_CLASS_BOUNDARY   1
-#define VERTEX_CLASS_SIMPLE     2
+enum VertexClass
+{
+	Undefined = -1,
+	Complex = 0,
+	Boundary = 1,
+	Simple = 2
+};
 
 int getVertRelative(int to, int offset, const Triangle& intriangle){
 	int start = -1;
 	int result = -1;
-	for (int i = 0; i < intriangle.vertices.size(); i++){
+	for (unsigned i = 0; i < intriangle.vertices.size(); i++){
 		if (intriangle.vertices[i] == to){
 			start = i;
 		}
@@ -357,7 +247,7 @@ int getVertRelative(int to, int offset, const Triangle& intriangle){
 }
 
 int rearangeTrianglesInFan(const vector<Triangle>& inTriangles, const int& v, vector <int>& trianglesOrder){
-	int result = VERTEX_CLASS_COMPLEX;
+	int result = VertexClass::Complex;
 	deque <int> newTrianglesOrder;
 	vector <int> usedTrianglesOrder;
 	usedTrianglesOrder.resize(trianglesOrder.size(), 0);
@@ -375,7 +265,7 @@ int rearangeTrianglesInFan(const vector<Triangle>& inTriangles, const int& v, ve
 	int oldLeftmostV;
 	do{
 		oldLeftmostV = leftmostV;
-		for (int i = 0; i < trianglesOrder.size(); i++){
+		for (unsigned i = 0; i < trianglesOrder.size(); i++){
 			if (!usedTrianglesOrder[i] &&
 				leftmostV == getVertRelative(v, 1, inTriangles[trianglesOrder[i]]))
 			{
@@ -390,7 +280,7 @@ int rearangeTrianglesInFan(const vector<Triangle>& inTriangles, const int& v, ve
 	int oldRightmostV;
 	do{
 		oldRightmostV = rightmostV;
-		for (int i = 0; i < trianglesOrder.size(); i++){
+		for (unsigned i = 0; i < trianglesOrder.size(); i++){
 			if (!usedTrianglesOrder[i] &&
 				rightmostV == getVertRelative(v, 2, inTriangles[trianglesOrder[i]]))
 			{
@@ -402,21 +292,21 @@ int rearangeTrianglesInFan(const vector<Triangle>& inTriangles, const int& v, ve
 		}
 	} while (oldRightmostV != rightmostV);
 
-	// ako sa ostanali neobhodeni triygylnici -> VERTEX_CLASS_COMPLEX
-	for (int i = 0; i < usedTrianglesOrder.size(); i++){
+	// ako sa ostanali neobhodeni triygylnici -> VertexClass::Complex
+	for (unsigned i = 0; i < usedTrianglesOrder.size(); i++){
 		if (usedTrianglesOrder[i] == 0)
 		{
-			return VERTEX_CLASS_COMPLEX;
+			return VertexClass::Complex;
 		}
 	}
 
 	// nowopodredenite triygylnici
 	trianglesOrder = vector<int>(newTrianglesOrder.begin(), newTrianglesOrder.end());
 	if (leftmostV == rightmostV){
-		result = VERTEX_CLASS_SIMPLE;
+		result = VertexClass::Simple;
 	}
 	else{
-		result = VERTEX_CLASS_BOUNDARY;
+		result = VertexClass::Boundary;
 	}
 
 	return result;
@@ -424,7 +314,7 @@ int rearangeTrianglesInFan(const vector<Triangle>& inTriangles, const int& v, ve
 
 bool in(const vector<int> & v, int x)
 {
-	for (int i = 0; i < v.size(); i++) if (x == v[i]) return true;
+	for (unsigned i = 0; i < v.size(); i++) if (x == v[i]) return true;
 	return false;
 }
 
@@ -526,27 +416,27 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 		// clasification preparation
 		//  a) za wseki wryh pazim chast ot koi triygylnici e
 		//  b) za wseki edge pazim broj triygylnici w koito uchastwa
-		//  ->ako wyrhowete uchastwat w zatworeno wetrilo ot triygylnici + drug triygylnik = VERTEX_CLASS_COMPLEX
-		//  ->ako edge-owete uchastvat w poweche ot 2 triygylnika vertex-ite koito gi systawqt = VERTEX_CLASS_COMPLEX
+		//  ->ako wyrhowete uchastwat w zatworeno wetrilo ot triygylnici + drug triygylnik = VertexClass::Complex
+		//  ->ako edge-owete uchastvat w poweche ot 2 triygylnika vertex-ite koito gi systawqt = VertexClass::Complex
 		//  =>wsichki drugi sa kandidati
 		vector< vector < int > > vertexFromTriangle;// [#vertex] = {#tri1,#tri2 ...};
 		//		vector< vector < int > > trianglesForEdge;  // [#minOfEdgeVertex][#minOfEdgeVertex] = {countOfTriangles};
 
 		// init
-		vertexClass.resize(inV.size(), VERTEX_CLASS_UNDEFINED);
+		vertexClass.resize(inV.size(), VertexClass::Undefined);
 		vertexFromTriangle.resize(inV.size());
 
 		vector< Edge > edges;
 		vector< Edge > edges1;
 
-		for (int i = 0; i < inT.size(); i++){
+		for (unsigned i = 0; i < inT.size(); i++){
 			//  a) za wseki wryh pazim chast ot koi triygylnici e
 			vertexFromTriangle[inT[i].vertices[0]].push_back(i);
 			vertexFromTriangle[inT[i].vertices[1]].push_back(i);
 			vertexFromTriangle[inT[i].vertices[2]].push_back(i);
 			//  b) za wseki edge pazim broj triygylnici w koito uchastwa
 
-			for (int j = 0; j < 3; j++)
+			for (unsigned j = 0; j < 3; j++)
 			{
 				Edge e(inT[i].vertices[j], inT[i].vertices[(j + 1) % 3]);
 				edges.push_back(e);
@@ -556,13 +446,13 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 
 		int totalEdges = 0;
 		sort(edges.begin(), edges.end());
-		int ei = 0;
+		unsigned ei = 0;
 		while (ei < edges.size())
 		{
 			const Edge & e = edges[ei];
-			int j = ei + 1;
+			unsigned j = ei + 1;
 			while (j < edges.size() && e == edges[j]) j++;
-			for (int k = ei; k < j; k++) edges[k].n = j - ei;
+			for (unsigned k = ei; k < j; k++) edges[k].n = j - ei;
 			ei = j;
 			totalEdges++;
 		}
@@ -576,21 +466,21 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 			ei += edges[ei].n;
 		}
 
-		// pass 1 ->ako edge-owete uchastvat w poweche ot 2 triygylnika vertex-ite koito gi systawqt = VERTEX_CLASS_COMPLEX
-		for (int ei = 0; ei < edges1.size(); ei++)
+		// pass 1 ->ako edge-owete uchastvat w poweche ot 2 triygylnika vertex-ite koito gi systawqt = VertexClass::Complex
+		for (unsigned ei = 0; ei < edges1.size(); ei++)
 		{
 			if (edges1[ei].n > 2)
 			{
-				vertexClass[edges1[ei].v0] = VERTEX_CLASS_COMPLEX;
-				vertexClass[edges1[ei].v1] = VERTEX_CLASS_COMPLEX;
+				vertexClass[edges1[ei].v0] = VertexClass::Complex;
+				vertexClass[edges1[ei].v1] = VertexClass::Complex;
 			}
 		}
 
 		int dummy = 0;
 
 		// pass 2 -> prepodrejdane na triygylnicite wyw wetrilo
-		for (int i = 0; i < inV.size(); i++){
-			if (vertexClass[i] == VERTEX_CLASS_UNDEFINED){
+		for (unsigned i = 0; i < inV.size(); i++){
+			if (vertexClass[i] == VertexClass::Undefined){
 				vertexClass[i] = rearangeTrianglesInFan(inT, i, vertexFromTriangle[i]);
 			}
 		}
@@ -598,11 +488,11 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 		// 2. evaluate the decimation criteria
 		float minDist = 1000000;
 		int   removeV = -1;
-		for (int i = 0; i < vertexClass.size(); i++){
+		for (unsigned i = 0; i < vertexClass.size(); i++){
 			switch (vertexClass[i]){
-			case VERTEX_CLASS_COMPLEX:
+			case VertexClass::Complex:
 				break;
-			case VERTEX_CLASS_SIMPLE:
+			case VertexClass::Simple:
 			{
 				float dist = fabs(analizeSimpleVertex(inV, inT, i, vertexFromTriangle[i]));
 				if (dist < minDist){
@@ -611,7 +501,7 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 				}
 			}
 				break;
-			case VERTEX_CLASS_BOUNDARY:
+			case VertexClass::Boundary:
 			{
 				int v0 = getVertRelative(i, 2, inT[vertexFromTriangle[i][0]]);
 				int v1 = getVertRelative(i, 1, inT[vertexFromTriangle[i][vertexFromTriangle[i].size() - 1]]);
@@ -630,24 +520,24 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 			removeV = 1;
 		}
 
-		if (vertexClass[removeV] == VERTEX_CLASS_BOUNDARY)
+		if (vertexClass[removeV] == VertexClass::Boundary)
 		{
 			vector<int> & faces = vertexFromTriangle[removeV];
 			vector<int> verts;
 			verts.resize(faces.size() + 1);
 			verts[0] = getVertRelative(removeV, 2, inT[faces[0]]);
-			for (int i = 0; i < faces.size(); i++)
+			for (unsigned i = 0; i < faces.size(); i++)
 			{
 				verts[i + 1] = getVertRelative(removeV, 1, inT[faces[i]]);
 			}
 
-			int sz = inT.size();
+			unsigned sz = inT.size();
 			outTriangles.clear();
 			outTriangles.resize(sz - 1);
 			int idx = 0;
-			for (int i = 0; i < sz; i++)
+			for (unsigned i = 0; i < sz; i++)
 			{
-				int j;
+				unsigned j;
 				for (j = 0; j < faces.size(); j++)
 				{
 					if (i == faces[j]) break;
@@ -658,7 +548,7 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 			}
 
 			int v0 = verts[0];
-			for (int i = 2; i < verts.size(); i++)
+			for (unsigned i = 2; i < verts.size(); i++)
 			{
 				outTriangles[idx].vertices.push_back(verts[0]);
 				outTriangles[idx].vertices.push_back(verts[i]);
@@ -674,7 +564,7 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 			int idx = 0;
 			for (int i = 0; i < sz; i++)
 			{
-				int j;
+				unsigned j;
 				for (j = 0; j < vertexFromTriangle[removeV].size(); j++)
 				{
 					if (i == vertexFromTriangle[removeV][j]) break;
@@ -685,7 +575,7 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 			}
 
 			int v0 = getVertRelative(removeV, 1, inT[vertexFromTriangle[removeV][0]]);
-			for (int i = 2; i < vertexFromTriangle[removeV].size(); i++)
+			for (unsigned i = 2; i < vertexFromTriangle[removeV].size(); i++)
 			{
 				int v1 = getVertRelative(removeV, 1, inT[vertexFromTriangle[removeV][i]]);
 				int v2 = getVertRelative(removeV, 2, inT[vertexFromTriangle[removeV][i]]);
@@ -697,7 +587,7 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 			}
 		}
 
-		for (int i = 0; i < outTriangles.size(); i++)
+		for (unsigned i = 0; i < outTriangles.size(); i++)
 		{
 			if (outTriangles[i].vertices[0] >= removeV) outTriangles[i].vertices[0]--;
 			if (outTriangles[i].vertices[1] >= removeV) outTriangles[i].vertices[1]--;
@@ -707,7 +597,7 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 		outVertices.clear();
 		outVertices.resize(inV.size() - 1);
 		int idx = 0;
-		for (int i = 0; i < inV.size(); i++)
+		for (unsigned i = 0; i < inV.size(); i++)
 		{
 			if (i == removeV) continue;
 			outVertices[idx++] = inV[i];
@@ -715,14 +605,14 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 
 		int * degs = new int[outVertices.size()];
 		memset(degs, 0, sizeof(int) * outVertices.size());
-		for (int i = 0; i < outTriangles.size(); i++)
+		for (unsigned i = 0; i < outTriangles.size(); i++)
 		{
 			degs[outTriangles[i].vertices[0]]++;
 			degs[outTriangles[i].vertices[1]]++;
 			degs[outTriangles[i].vertices[2]]++;
 		}
 
-		for (int i = 0; i < outVertices.size(); i++)
+		for (unsigned i = 0; i < outVertices.size(); i++)
 		{
 			if (degs[i] == 0)
 			{
@@ -760,7 +650,7 @@ void getNormal3V(const float& A1, const float& A2, const float& A3,
 }
 static GLuint make_mesh(const vector<Vector>& vertices, const vector<Triangle>& triangles){
 	GLuint list;
-	GLfloat a, b;
+	//GLfloat a, b;
 	GLfloat da = 18.0, db = 18.0;
 	GLfloat radius = 1.0;
 	GLuint color;
@@ -772,7 +662,7 @@ static GLuint make_mesh(const vector<Vector>& vertices, const vector<Triangle>& 
 
 	glColor3f(1.0, 0.0, 0.0);
 	color = 0;
-	for (int i = 0; i < triangles.size(); i++) {
+	for (unsigned i = 0; i < triangles.size(); i++) {
 
 		glBegin(GL_POLYGON);
 		getNormal3V(vertices[triangles[i].vertices[0]].f[0], vertices[triangles[i].vertices[0]].f[1], vertices[triangles[i].vertices[0]].f[2],
@@ -780,7 +670,7 @@ static GLuint make_mesh(const vector<Vector>& vertices, const vector<Triangle>& 
 			vertices[triangles[i].vertices[2]].f[0], vertices[triangles[i].vertices[2]].f[1], vertices[triangles[i].vertices[2]].f[2],
 			n1, n2, n3);
 		glNormal3f(n1, n2, n3);
-		for (int j = 0; j < triangles[i].vertices.size(); j++)
+		for (unsigned j = 0; j < triangles[i].vertices.size(); j++)
 		{
 			int vindex = triangles[i].vertices[j];
 			glVertex3f(vertices[vindex].f[0], vertices[vindex].f[1], vertices[vindex].f[2]);
@@ -889,7 +779,7 @@ void light(void) {
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
 	GLfloat lightColor[] = { 0.4f, 0.4f, 0.4f, 1.0f };
-	GLfloat lightPos[] = { 1.5f * RADIUS, 2 * RADIUS, 1.5 * RADIUS, 1.0f };
+	GLfloat lightPos[] = { 1.5f * RADIUS, 2.f * RADIUS, 1.5f * RADIUS, 1.0f };
 	//Diffuse (non-shiny) light component
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
 	//Specular (shiny) light component
@@ -959,11 +849,13 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 	cout << filename << endl;
-	LoadOffFile(filename, vertices[0], triangles[0]);
+	IndexedFaceSet initialMesh;
+
+	LoadOffFile(filename, initialMesh.m_Vertices, initialMesh.m_Triangles);
 
 	figure = 0;
-	Mesh[0] = make_mesh(vertices[0], triangles[0]);
-	simple_triangulation(vertices[0], triangles[0],
+	Mesh[0] = make_mesh(initialMesh.m_Vertices, initialMesh.m_Triangles);
+	simple_triangulation(initialMesh.m_Vertices, initialMesh.m_Triangles,
 		vertices[1], triangles[1]);
 
 	Mesh[1] = make_mesh(vertices[1], triangles[1]);
