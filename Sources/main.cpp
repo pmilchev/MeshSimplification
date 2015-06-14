@@ -41,14 +41,23 @@ class IMesh
 class IndexedFaceSet : public IMesh
 {
 public:
+	const vector<Vector>& GetVertices() const { return m_Vertices; }
+	const vector<Triangle>& GetTriangles() const { return m_Triangles; }
+
+	vector<Vector>& GetVertices() { return m_Vertices; }
+	vector<Triangle>& GetTriangles() { return m_Triangles; }
+//private:
 	vector<Vector> m_Vertices;
 	vector<Triangle> m_Triangles;
 };
 
 // global data
 static const unsigned MAX_FIGURES = 10;
-static vector<Vector> vertices[MAX_FIGURES];
-static vector<Triangle> triangles[MAX_FIGURES];
+//static vector<Vector> vertices[MAX_FIGURES];
+//static vector<Triangle> triangles[MAX_FIGURES];
+
+static IndexedFaceSet indexedFaceSets[MAX_FIGURES];
+
 static int figure;
 GLuint Mesh[MAX_FIGURES];
 const float RADIUS = 4.0f; //The radius of the sphere
@@ -61,7 +70,10 @@ void error(const string & name)
 }
 
 // implementation of functions
-void LoadOffFile(const string& name, vector<Vector>& vertices, vector<Triangle>& triangles){
+void LoadOffFile(const string& name, IndexedFaceSet& result){
+	vector<Vector> vertices;
+	vector<Triangle> triangles;
+	
 	string line;
 	ifstream myfile(name);
 	int state = 0;
@@ -124,26 +136,29 @@ void LoadOffFile(const string& name, vector<Vector>& vertices, vector<Triangle>&
 		vertices[i].y -= dy;
 		vertices[i].z -= dz;
 	}
+
+	result.m_Vertices = vertices;
+	result.m_Triangles = triangles;
 }
 
-int simple_triangulation(const vector<Vector>&  inVertices, const vector<Triangle>&  inTriangles,
-	vector<Vector>& outVertices, vector<Triangle>& outTriangles)
+int simple_triangulation(const IndexedFaceSet& inMesh,
+	IndexedFaceSet& outMesh)
 {
-	outVertices.clear();
-	unsigned long long size = inTriangles.size();
+	outMesh.m_Vertices.clear();
+	unsigned long long size = inMesh.GetTriangles().size();
 	vector<int> v; v.resize(3);
 	int c[3] = { 255, 0, 0 };
 	int isAlreadyTriangulated = 1;
 	for (unsigned long long i = 0; i < size; i++){
-		v[0] = inTriangles[i].vertices[0];
-		for (unsigned k = 2; k < inTriangles[i].vertices.size(); k++){
-			v[1] = inTriangles[i].vertices[k - 1];
-			v[2] = inTriangles[i].vertices[k];
-			outTriangles.push_back(Triangle(v, c));
+		v[0] = inMesh.GetTriangles()[i].vertices[0];
+		for (unsigned k = 2; k < inMesh.GetTriangles()[i].vertices.size(); k++){
+			v[1] = inMesh.GetTriangles()[i].vertices[k - 1];
+			v[2] = inMesh.GetTriangles()[i].vertices[k];
+			outMesh.GetTriangles().push_back(Triangle(v, c));
 			isAlreadyTriangulated = 0;
 		}
 	}
-	outVertices = inVertices;
+	outMesh.GetVertices() = inMesh.GetVertices();
 	return isAlreadyTriangulated;
 }
 
@@ -648,7 +663,8 @@ void getNormal3V(const float& A1, const float& A2, const float& A3,
 	n3 = a1*b2 - a2*b1;
 	return;
 }
-static GLuint make_mesh(const vector<Vector>& vertices, const vector<Triangle>& triangles){
+static GLuint make_mesh(const IndexedFaceSet& mesh)//const vector<Vector>& vertices, const vector<Triangle>& triangles){
+{
 	GLuint list;
 	//GLfloat a, b;
 	GLfloat da = 18.0, db = 18.0;
@@ -662,18 +678,25 @@ static GLuint make_mesh(const vector<Vector>& vertices, const vector<Triangle>& 
 
 	glColor3f(1.0, 0.0, 0.0);
 	color = 0;
-	for (unsigned i = 0; i < triangles.size(); i++) {
+	for (unsigned i = 0; i < mesh.GetTriangles().size(); i++) {
 
 		glBegin(GL_POLYGON);
-		getNormal3V(vertices[triangles[i].vertices[0]].f[0], vertices[triangles[i].vertices[0]].f[1], vertices[triangles[i].vertices[0]].f[2],
-			vertices[triangles[i].vertices[1]].f[0], vertices[triangles[i].vertices[1]].f[1], vertices[triangles[i].vertices[1]].f[2],
-			vertices[triangles[i].vertices[2]].f[0], vertices[triangles[i].vertices[2]].f[1], vertices[triangles[i].vertices[2]].f[2],
+		getNormal3V(
+			mesh.GetVertices()[mesh.GetTriangles()[i].vertices[0]].f[0],
+				mesh.GetVertices()[mesh.GetTriangles()[i].vertices[0]].f[1], 
+				mesh.GetVertices()[mesh.GetTriangles()[i].vertices[0]].f[2],
+			mesh.GetVertices()[mesh.GetTriangles()[i].vertices[1]].f[0], 
+				mesh.GetVertices()[mesh.GetTriangles()[i].vertices[1]].f[1], 
+				mesh.GetVertices()[mesh.GetTriangles()[i].vertices[1]].f[2],
+			mesh.GetVertices()[mesh.GetTriangles()[i].vertices[2]].f[0], 
+				mesh.GetVertices()[mesh.GetTriangles()[i].vertices[2]].f[1], 
+				mesh.GetVertices()[mesh.GetTriangles()[i].vertices[2]].f[2],
 			n1, n2, n3);
 		glNormal3f(n1, n2, n3);
-		for (unsigned j = 0; j < triangles[i].vertices.size(); j++)
+		for (unsigned j = 0; j < mesh.GetTriangles()[i].vertices.size(); j++)
 		{
-			int vindex = triangles[i].vertices[j];
-			glVertex3f(vertices[vindex].f[0], vertices[vindex].f[1], vertices[vindex].f[2]);
+			int vindex = mesh.GetTriangles()[i].vertices[j];
+			glVertex3f(mesh.GetVertices()[vindex].f[0], mesh.GetVertices()[vindex].f[1], mesh.GetVertices()[vindex].f[2]);
 		}
 		glEnd();
 		color = 1 - color;
@@ -749,17 +772,17 @@ void key(unsigned char k, int x, int y)
 	{
 		figure = 3;
 
-		int cnt = max(1, (int)(0.1f * vertices[1].size()));
+		int cnt = max(1, (int)(0.1f * indexedFaceSets[1].GetVertices().size()));
 		int total = cnt;
 		while (cnt--)
 		{
 			printf("%d out of %d\n", total - cnt, total);
-			decimation2(vertices[3], triangles[3],
-				vertices[4], triangles[4]);
-			vertices[3] = vertices[4];
-			triangles[3] = triangles[4];
+			decimation2(indexedFaceSets[3].GetVertices(), indexedFaceSets[3].GetTriangles(),
+				indexedFaceSets[4].GetVertices(), indexedFaceSets[4].GetTriangles());
+			indexedFaceSets[3].GetVertices() = indexedFaceSets[4].GetVertices();
+			indexedFaceSets[3].GetTriangles() = indexedFaceSets[4].GetTriangles();
 		}
-		Mesh[3] = make_mesh(vertices[3], triangles[3]);
+		Mesh[3] = make_mesh(indexedFaceSets[3]);
 
 		glutPostRedisplay();
 		break;
@@ -806,7 +829,7 @@ void draw(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	printf("Mesh[%d] v# = %d, t# = %d\n", figure, vertices[figure].size(), triangles[figure].size());
+	printf("Mesh[%d] v# = %d, t# = %d\n", figure, indexedFaceSets[figure].GetVertices().size(), indexedFaceSets[figure].GetTriangles().size());
 
 	light();
 
@@ -851,20 +874,21 @@ int main(int argc, char *argv[])
 	cout << filename << endl;
 	IndexedFaceSet initialMesh;
 
-	LoadOffFile(filename, initialMesh.m_Vertices, initialMesh.m_Triangles);
+	LoadOffFile(filename, initialMesh);
 
 	figure = 0;
-	Mesh[0] = make_mesh(initialMesh.m_Vertices, initialMesh.m_Triangles);
-	simple_triangulation(initialMesh.m_Vertices, initialMesh.m_Triangles,
-		vertices[1], triangles[1]);
+	Mesh[0] = make_mesh(initialMesh);
+	simple_triangulation(initialMesh, indexedFaceSets[1]);
 
-	Mesh[1] = make_mesh(vertices[1], triangles[1]);
+	Mesh[1] = make_mesh(indexedFaceSets[1]);
 
-	decimation1(vertices[1], triangles[1], vertices[2], triangles[2]);
-	Mesh[2] = make_mesh(vertices[2], triangles[2]);
+	decimation1(indexedFaceSets[1].GetVertices(), indexedFaceSets[1].GetTriangles(),
+		indexedFaceSets[2].GetVertices(), indexedFaceSets[2].GetTriangles());
+	Mesh[2] = make_mesh(indexedFaceSets[2]);
 
-	vertices[3] = vertices[1];
-	triangles[3] = triangles[1];
+	indexedFaceSets[3] = indexedFaceSets[1];
+	//indexedFaceSets[3].GetVertices() = indexedFaceSets[1].GetVertices();
+	//indexedFaceSets[3].GetTriangles() = indexedFaceSets[1].GetTriangles();
 
 	Mesh[3] = Mesh[1];
 	myinit();

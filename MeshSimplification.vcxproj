@@ -87,6 +87,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sources\main.cpp" />
+    <ClCompile Include="Sources\vector3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\vector3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

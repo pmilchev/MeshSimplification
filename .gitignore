@@ -4,3 +4,8 @@ Debug/MeshSimplification.log
 Debug/vc120.pdb
 *.idb
 Debug/helm
+*.off
+*.exe
+*.obj
+*.opensdf
+MeshSimplification.sdf
