@@ -14,10 +14,10 @@
 
 using namespace std;
 
-Vector operator*(float c, const Vector & v)
-{
-	return v * c;
-}
+//Vector3 operator*(float c, const Vector3 & v)
+//{
+//	return v * c;
+//}
 
 // declaration of functions
 void getNormal3V(const float& A1, const float& A2, const float& A3,
@@ -41,19 +41,19 @@ class IMesh
 class IndexedFaceSet : public IMesh
 {
 public:
-	const vector<Vector>& GetVertices() const { return m_Vertices; }
+	const vector<Vector3>& GetVertices() const { return m_Vertices; }
 	const vector<Triangle>& GetTriangles() const { return m_Triangles; }
 
-	vector<Vector>& GetVertices() { return m_Vertices; }
+	vector<Vector3>& GetVertices() { return m_Vertices; }
 	vector<Triangle>& GetTriangles() { return m_Triangles; }
 //private:
-	vector<Vector> m_Vertices;
+	vector<Vector3> m_Vertices;
 	vector<Triangle> m_Triangles;
 };
 
 // global data
 static const unsigned MAX_FIGURES = 10;
-//static vector<Vector> vertices[MAX_FIGURES];
+//static vector<Vector3> vertices[MAX_FIGURES];
 //static vector<Triangle> triangles[MAX_FIGURES];
 
 static IndexedFaceSet indexedFaceSets[MAX_FIGURES];
@@ -71,7 +71,7 @@ void error(const string & name)
 
 // implementation of functions
 void LoadOffFile(const string& name, IndexedFaceSet& result){
-	vector<Vector> vertices;
+	vector<Vector3> vertices;
 	vector<Triangle> triangles;
 	
 	string line;
@@ -96,7 +96,7 @@ void LoadOffFile(const string& name, IndexedFaceSet& result){
 	for (int i = 0; i < vcount; i++){
 		float v1, v2, v3;
 		myfile >> v1 >> v2 >> v3;
-		vertices[i] = Vector(v1, v2, v3);
+		vertices[i] = Vector3(v1, v2, v3);
 	}
 
 	// step 3
@@ -162,8 +162,8 @@ int simple_triangulation(const IndexedFaceSet& inMesh,
 	return isAlreadyTriangulated;
 }
 
-int decimation1(const vector<Vector>& inVertices, const vector<Triangle>& inTriangles,
-	vector<Vector>& outVertices, vector<Triangle>& outTriangles)
+int decimation1(const vector<Vector3>& inVertices, const vector<Triangle>& inTriangles,
+	vector<Vector3>& outVertices, vector<Triangle>& outTriangles)
 {
 	// cluster sampling
 	float minx, miny, minz, maxx, maxy, maxz;
@@ -333,44 +333,44 @@ bool in(const vector<int> & v, int x)
 	return false;
 }
 
-float analizeSimpleVertex(const vector<Vector>& inVertices, const vector<Triangle>& inTriangles,
+float analizeSimpleVertex(const vector<Vector3>& inVertices, const vector<Triangle>& inTriangles,
 	int ve, const vector<int>& faces)
 {
 	int sz = faces.size();
 
-	Vector N(0.0f, 0.0f, 0.0f);
-	Vector B(0.0f, 0.0f, 0.0f);
+	Vector3 N(0.0f, 0.0f, 0.0f);
+	Vector3 B(0.0f, 0.0f, 0.0f);
 	float totalArea = 0.0f;
 
 	for (int i = 0; i < sz; i++)
 	{
-		Vector v[3] = {
+		Vector3 v[3] = {
 			inVertices[inTriangles[faces[i]].vertices[0]],
 			inVertices[inTriangles[faces[i]].vertices[1]],
 			inVertices[inTriangles[faces[i]].vertices[2]]
 		};
-		Vector c = (v[0] + v[1] + v[2]) / 3.0f;
-		Vector e0 = v[1] - v[0];
-		Vector e1 = v[2] - v[0];
+		Vector3 c = (v[0] + v[1] + v[2]) / 3.0f;
+		Vector3 e0 = v[1] - v[0];
+		Vector3 e1 = v[2] - v[0];
 		float area = (e0 ^ e1).len() * 0.5f;
 		totalArea += area;
 		B += c * area;
 
-		Vector n = e0 ^ e1;
+		Vector3 n = e0 ^ e1;
 		n.normalize();
 		N += area * n;
 	}
 	B /= totalArea;
 	N.normalize();
-	Vector V = inVertices[ve];
+	Vector3 V = inVertices[ve];
 	float result = fabsf(N * (V - B));
 	return result;
 }
 
-float analyzeBoundaryVertex(const vector<Vector>& inVertices,
+float analyzeBoundaryVertex(const vector<Vector3>& inVertices,
 	int v, int v0, int v1)
 {
-	Vector verts[3] = {
+	Vector3 verts[3] = {
 		inVertices[v],
 		inVertices[v0],
 		inVertices[v1]
@@ -408,8 +408,8 @@ struct Edge
 	int n;
 };
 
-int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTriangles,
-	vector<Vector>& outVertices, vector<Triangle>& outTriangles)
+int decimation2(const vector<Vector3>& inVertices, const vector<Triangle>& inTriangles,
+	vector<Vector3>& outVertices, vector<Triangle>& outTriangles)
 {
 	if (inVertices.size() < 5) return 0;
 	// ----------------------------------------------------------------------------------------------------------------------
@@ -418,7 +418,7 @@ int decimation2(const vector<Vector>& inVertices, const vector<Triangle>& inTria
 	// 2. evaluate the decimation criteria, and
 	// 3. triangulate the resulting hole.
 	// ----------------------------------------------------------------------------------------------------------------------
-	vector<Vector> inV = inVertices;
+	vector<Vector3> inV = inVertices;
 	vector<Triangle> inT = inTriangles;
 
 	//	while (inV.size() > (0.9*inVertices.size())){ // start the LOOP
@@ -663,7 +663,7 @@ void getNormal3V(const float& A1, const float& A2, const float& A3,
 	n3 = a1*b2 - a2*b1;
 	return;
 }
-static GLuint make_mesh(const IndexedFaceSet& mesh)//const vector<Vector>& vertices, const vector<Triangle>& triangles){
+static GLuint make_mesh(const IndexedFaceSet& mesh)//const vector<Vector3>& vertices, const vector<Triangle>& triangles){
 {
 	GLuint list;
 	//GLfloat a, b;
