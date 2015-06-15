@@ -15,53 +15,19 @@
 
 using namespace std;
 
-//Vector3 operator*(float c, const Vector3 & v)
-//{
-//	return v * c;
-//}
-
 // declaration of functions
 void getNormal3V(const float& A1, const float& A2, const float& A3,
 	const float& B1, const float& B2, const float& B3,
 	const float& C1, const float& C2, const float& C3,
 	float& n1, float& n2, float& n3);
 
-
-//// used structures
-//struct Triangle{
-//	vector<int> vertices;
-//	int         color[3];
-//	Triangle(){ color[0] = color[1] = color[2] = 1; };
-//	Triangle(vector<int> vertices, int color[3]){ this->vertices = vertices; this->color[0] = color[0]; this->color[1] = color[1]; this->color[2] = color[2]; };
-//};
-//
-//class IMesh
-//{
-//};
-//
-//class IndexedFaceSet : public IMesh
-//{
-//public:
-//	const vector<Vector3>& GetVertices() const { return m_Vertices; }
-//	const vector<Triangle>& GetTriangles() const { return m_Triangles; }
-//
-//	vector<Vector3>& GetVertices() { return m_Vertices; }
-//	vector<Triangle>& GetTriangles() { return m_Triangles; }
-////private:
-//	vector<Vector3> m_Vertices;
-//	vector<Triangle> m_Triangles;
-//};
-
 // global data
 static const unsigned MAX_FIGURES = 10;
-//static vector<Vector3> vertices[MAX_FIGURES];
-//static vector<Triangle> triangles[MAX_FIGURES];
-
 static IndexedFaceSet indexedFaceSets[MAX_FIGURES];
 
 static int figure;
 GLuint Mesh[MAX_FIGURES];
-const float RADIUS = 4.0f; //The radius of the sphere
+//const float RADIUS = 4.0f; //The radius of the sphere
 GLfloat lightPosition[] = { 4.0f, -3.5f, 0.0f, 1.0f };
 float angle = -60;
 
@@ -380,34 +346,6 @@ float analyzeBoundaryVertex(const vector<Vector3>& inVertices,
 	float l = (verts[0] - verts[1]).len();
 	return 2.0f * area / l;
 }
-//
-//struct Edge
-//{
-//	Edge(int _v0 = 0, int _v1 = 0)
-//	{
-//		n = 0;
-//		set(_v0, _v1);
-//	}
-//
-//	void set(int _v0, int _v1)
-//	{
-//		v0 = max(_v0, _v1);
-//		v1 = min(_v0, _v1);
-//	}
-//
-//	bool operator==(const Edge & other) const
-//	{
-//		return v0 == other.v0 && v1 == other.v1;
-//	}
-//
-//	bool operator<(const Edge & other) const
-//	{
-//		return (v0 < other.v0 || (v0 == other.v0 && v1 < other.v1));
-//	}
-//
-//	int v0, v1;
-//	int n;
-//};
 
 int decimation2(const vector<Vector3>& inVertices, const vector<Triangle>& inTriangles,
 	vector<Vector3>& outVertices, vector<Triangle>& outTriangles)
@@ -709,168 +647,342 @@ static GLuint make_mesh(const IndexedFaceSet& mesh)//const vector<Vector3>& vert
 	return list;
 }
 
-void reshape(int width, int height)
+//void reshape(int width, int height)
+//{
+//	glViewport(0, 0, (GLint)width, (GLint)height);
+//	glMatrixMode(GL_PROJECTION);
+//	glLoadIdentity();
+//
+//	glMatrixMode(GL_PROJECTION);
+//	glLoadIdentity();
+//	glFrustum(-3.0, 3.0, -3.0, 3.0, 64, 256);
+//
+//	glMatrixMode(GL_MODELVIEW);
+//	glLoadIdentity();
+//	glTranslatef(0.0, 0.0, -100);
+//}
+
+//void key(unsigned char k, int x, int y)
+//{
+//	switch (k) {
+//	case 27:  /* Escape */
+//		exit(0);
+//	case 48:  // 0 
+//		figure = 0;
+//		glutPostRedisplay();
+//		break;
+//	case 49:  // 1
+//		figure = 1;
+//		glutPostRedisplay();
+//		break;
+//	case 50:  // 2
+//		figure = 2;
+//		glutPostRedisplay();
+//		break;
+//	case 51:  // 3
+//		figure = 3;
+//		glutPostRedisplay();
+//		break;
+//	case 115: // S
+//		glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
+//		glutPostRedisplay();
+//		break;
+//	case 119: // W
+//		glRotatef(-5.0f, 1.0f, 0.0f, 0.0f);
+//		glutPostRedisplay();
+//		break;
+//	case 97: // A
+//		glRotatef(5.0f, 0.0f, 1.0f, 0.0f);
+//		glutPostRedisplay();
+//		break;
+//	case 100: // D
+//		glRotatef(-5.0f, 0.0f, 1.0f, 0.0f);
+//		glutPostRedisplay();
+//		break;
+//	case 113: // Q
+//		glScalef(0.8f, 0.8f, 0.8f);
+//		glutPostRedisplay();
+//		break;
+//	case 101: // E
+//		glScalef(1.25f, 1.25f, 1.25f);
+//		glutPostRedisplay();
+//		break;
+//	case 114: // R
+//	{
+//		figure = 3;
+//
+//		int cnt = max(1, (int)(0.1f * indexedFaceSets[1].GetVertices().size()));
+//		int total = cnt;
+//		while (cnt--)
+//		{
+//			printf("%d out of %d\n", total - cnt, total);
+//			decimation2(indexedFaceSets[3].GetVertices(), indexedFaceSets[3].GetTriangles(),
+//				indexedFaceSets[4].GetVertices(), indexedFaceSets[4].GetTriangles());
+//			indexedFaceSets[3].GetVertices() = indexedFaceSets[4].GetVertices();
+//			indexedFaceSets[3].GetTriangles() = indexedFaceSets[4].GetTriangles();
+//		}
+//		Mesh[3] = make_mesh(indexedFaceSets[3]);
+//
+//		glutPostRedisplay();
+//		break;
+//	}
+//	default:
+//		printf("%d\n", k);
+//	}
+//}
+
+//void light(void) {
+//	glPushMatrix();
+//	glLoadIdentity();
+//	glTranslatef(0.0f, 0.0f, -10.0f);
+//	glRotatef(angle, 0, 1, 0);
+//
+//	GLfloat ambientLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+//	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+//
+//	GLfloat lightColor[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+//	GLfloat lightPos[] = { 1.5f * RADIUS, 2.f * RADIUS, 1.5f * RADIUS, 1.0f };
+//	//Diffuse (non-shiny) light component
+//	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+//	//Specular (shiny) light component
+//	glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
+//	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+//	glPopMatrix();
+//}
+
+//void material(void){
+//	//The color of the sphere
+//	GLfloat materialColor[] = { 0.7f, 0.8f, 0.7f, 1.0f };
+//	//The specular (shiny) component of the material
+//	GLfloat materialSpecular[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+//	//The color emitted by the material
+//	GLfloat materialEmission[] = { 0.05f, 0.05f, 0.05f, 1.0f };
+//
+//	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
+//	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+//	glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+//	glMaterialf(GL_FRONT, GL_SHININESS, 12); //The shininess parameter
+//}
+
+//void draw(void)
+//{
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//	printf("Mesh[%d] v# = %d, t# = %d\n", figure, indexedFaceSets[figure].GetVertices().size(), indexedFaceSets[figure].GetTriangles().size());
+//
+//	light();
+//
+//	material();
+//	glCallList(Mesh[figure]);
+//
+//	glFlush();
+//	glutSwapBuffers();
+//}
+//
+//void myinit(void)
+//{
+//	glEnable(GL_DEPTH_TEST);
+//	glEnable(GL_LIGHTING);
+//	glEnable(GL_LIGHT0);
+//	glEnable(GL_NORMALIZE);
+//	glShadeModel(GL_SMOOTH);
+//	//Disable color materials, so that glMaterial calls work
+//	glDisable(GL_COLOR_MATERIAL);
+//
+//	glDepthFunc(GL_LEQUAL);
+//	glEnable(GL_DEPTH_TEST);
+//}
+
+class Window
 {
-	glViewport(0, 0, (GLint)width, (GLint)height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glFrustum(-3.0, 3.0, -3.0, 3.0, 64, 256);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glTranslatef(0.0, 0.0, -100);
-}
-
-void key(unsigned char k, int x, int y)
-{
-	switch (k) {
-	case 27:  /* Escape */
-		exit(0);
-	case 48:  // 0 
-		figure = 0;
-		glutPostRedisplay();
-		break;
-	case 49:  // 1
-		figure = 1;
-		glutPostRedisplay();
-		break;
-	case 50:  // 2
-		figure = 2;
-		glutPostRedisplay();
-		break;
-	case 51:  // 3
-		figure = 3;
-		glutPostRedisplay();
-		break;
-	case 115: // S
-		glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
-		glutPostRedisplay();
-		break;
-	case 119: // W
-		glRotatef(-5.0f, 1.0f, 0.0f, 0.0f);
-		glutPostRedisplay();
-		break;
-	case 97: // A
-		glRotatef(5.0f, 0.0f, 1.0f, 0.0f);
-		glutPostRedisplay();
-		break;
-	case 100: // D
-		glRotatef(-5.0f, 0.0f, 1.0f, 0.0f);
-		glutPostRedisplay();
-		break;
-	case 113: // Q
-		glScalef(0.8f, 0.8f, 0.8f);
-		glutPostRedisplay();
-		break;
-	case 101: // E
-		glScalef(1.25f, 1.25f, 1.25f);
-		glutPostRedisplay();
-		break;
-	case 114: // R
+public:
+	void Init(int argc, char *argv[])
 	{
-		figure = 3;
+		glutInit(&argc, argv);
 
-		int cnt = max(1, (int)(0.1f * indexedFaceSets[1].GetVertices().size()));
-		int total = cnt;
-		while (cnt--)
+		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+		glutInitWindowSize(640, 640);
+
+		glutCreateWindow("Pavel Milchev - Decimation of triangular mesh");
+
+		myinit();
+	}
+
+	void MainLoop()
+	{
+		glutDisplayFunc(this->draw);
+		glutKeyboardFunc(key);
+		glutReshapeFunc(reshape);
+
+		glutMainLoop();
+	}
+private:
+	static const float RADIUS; //The radius of the sphere
+	void myinit(void)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glEnable(GL_NORMALIZE);
+		glShadeModel(GL_SMOOTH);
+		//Disable color materials, so that glMaterial calls work
+		glDisable(GL_COLOR_MATERIAL);
+
+		glDepthFunc(GL_LEQUAL);
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	static void draw(void)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		printf("Mesh[%d] v# = %d, t# = %d\n", figure, indexedFaceSets[figure].GetVertices().size(), indexedFaceSets[figure].GetTriangles().size());
+
+		light();
+
+		material();
+		glCallList(Mesh[figure]);
+
+		glFlush();
+		glutSwapBuffers();
+	}
+
+	static void material(void)
+	{
+		//The color of the sphere
+		GLfloat materialColor[] = { 0.7f, 0.8f, 0.7f, 1.0f };
+		//The specular (shiny) component of the material
+		GLfloat materialSpecular[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+		//The color emitted by the material
+		GLfloat materialEmission[] = { 0.05f, 0.05f, 0.05f, 1.0f };
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
+		glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+		glMaterialf(GL_FRONT, GL_SHININESS, 12); //The shininess parameter
+	}
+
+	static void light(void) 
+	{
+		glPushMatrix();
+		glLoadIdentity();
+		glTranslatef(0.0f, 0.0f, -10.0f);
+		glRotatef(angle, 0, 1, 0);
+
+		GLfloat ambientLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+
+		GLfloat lightColor[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+		GLfloat lightPos[] = { 1.5f * RADIUS, 2.f * RADIUS, 1.5f * RADIUS, 1.0f };
+		//Diffuse (non-shiny) light component
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+		//Specular (shiny) light component
+		glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
+		glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+		glPopMatrix();
+	}
+
+	static void reshape(int width, int height)
+	{
+		glViewport(0, 0, (GLint)width, (GLint)height);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glFrustum(-3.0, 3.0, -3.0, 3.0, 64, 256);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glTranslatef(0.0, 0.0, -100);
+	}
+
+	static void key(unsigned char k, int x, int y)
+	{
+		switch (k) {
+		case 27:  /* Escape */
+			exit(0);
+		case 48:  // 0 
+			figure = 0;
+			glutPostRedisplay();
+			break;
+		case 49:  // 1
+			figure = 1;
+			glutPostRedisplay();
+			break;
+		case 50:  // 2
+			figure = 2;
+			glutPostRedisplay();
+			break;
+		case 51:  // 3
+			figure = 3;
+			glutPostRedisplay();
+			break;
+		case 115: // S
+			glRotatef(5.0f, 1.0f, 0.0f, 0.0f);
+			glutPostRedisplay();
+			break;
+		case 119: // W
+			glRotatef(-5.0f, 1.0f, 0.0f, 0.0f);
+			glutPostRedisplay();
+			break;
+		case 97: // A
+			glRotatef(5.0f, 0.0f, 1.0f, 0.0f);
+			glutPostRedisplay();
+			break;
+		case 100: // D
+			glRotatef(-5.0f, 0.0f, 1.0f, 0.0f);
+			glutPostRedisplay();
+			break;
+		case 113: // Q
+			glScalef(0.8f, 0.8f, 0.8f);
+			glutPostRedisplay();
+			break;
+		case 101: // E
+			glScalef(1.25f, 1.25f, 1.25f);
+			glutPostRedisplay();
+			break;
+		case 114: // R
 		{
-			printf("%d out of %d\n", total - cnt, total);
-			decimation2(indexedFaceSets[3].GetVertices(), indexedFaceSets[3].GetTriangles(),
-				indexedFaceSets[4].GetVertices(), indexedFaceSets[4].GetTriangles());
-			indexedFaceSets[3].GetVertices() = indexedFaceSets[4].GetVertices();
-			indexedFaceSets[3].GetTriangles() = indexedFaceSets[4].GetTriangles();
+			figure = 3;
+
+			int cnt = max(1, (int)(0.1f * indexedFaceSets[1].GetVertices().size()));
+			int total = cnt;
+			while (cnt--)
+			{
+				printf("%d out of %d\n", total - cnt, total);
+				decimation2(indexedFaceSets[3].GetVertices(), indexedFaceSets[3].GetTriangles(),
+					indexedFaceSets[4].GetVertices(), indexedFaceSets[4].GetTriangles());
+				indexedFaceSets[3].GetVertices() = indexedFaceSets[4].GetVertices();
+				indexedFaceSets[3].GetTriangles() = indexedFaceSets[4].GetTriangles();
+			}
+			Mesh[3] = make_mesh(indexedFaceSets[3]);
+
+			glutPostRedisplay();
+			break;
 		}
-		Mesh[3] = make_mesh(indexedFaceSets[3]);
-
-		glutPostRedisplay();
-		break;
+		default:
+			printf("%d\n", k);
+		}
 	}
-	default:
-		printf("%d\n", k);
-	}
-}
 
-void light(void) {
-	glPushMatrix();
-	glLoadIdentity();
-	glTranslatef(0.0f, 0.0f, -10.0f);
-	glRotatef(angle, 0, 1, 0);
+};
 
-	GLfloat ambientLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
-
-	GLfloat lightColor[] = { 0.4f, 0.4f, 0.4f, 1.0f };
-	GLfloat lightPos[] = { 1.5f * RADIUS, 2.f * RADIUS, 1.5f * RADIUS, 1.0f };
-	//Diffuse (non-shiny) light component
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
-	//Specular (shiny) light component
-	glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glPopMatrix();
-}
-
-void material(void){
-	//The color of the sphere
-	GLfloat materialColor[] = { 0.7f, 0.8f, 0.7f, 1.0f };
-	//The specular (shiny) component of the material
-	GLfloat materialSpecular[] = { 0.4f, 0.4f, 0.4f, 1.0f };
-	//The color emitted by the material
-	GLfloat materialEmission[] = { 0.05f, 0.05f, 0.05f, 1.0f };
-
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialColor);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular);
-	glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-	glMaterialf(GL_FRONT, GL_SHININESS, 12); //The shininess parameter
-}
-
-void draw(void)
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	printf("Mesh[%d] v# = %d, t# = %d\n", figure, indexedFaceSets[figure].GetVertices().size(), indexedFaceSets[figure].GetTriangles().size());
-
-	light();
-
-	material();
-	glCallList(Mesh[figure]);
-
-	glFlush();
-	glutSwapBuffers();
-}
-
-void myinit(void)
-{
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_NORMALIZE);
-	glShadeModel(GL_SMOOTH);
-	//Disable color materials, so that glMaterial calls work
-	glDisable(GL_COLOR_MATERIAL);
-
-	glDepthFunc(GL_LEQUAL);
-	glEnable(GL_DEPTH_TEST);
-}
+const float Window::RADIUS = 4.0f;
 
 int main(int argc, char *argv[])
 {
-	glutInit(&argc, argv);
-
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(640, 640);
-
-	glutCreateWindow("Pavel Milchev - Decimation of triangular mesh");
+	Window window;
+	window.Init(argc, argv);
 
 	string filename;
 	if (argc == 2){
 		filename = argv[1];
 	}
-	else{
+	else
+	{
 		cout << "you have to give at least one argument: *.exe filename";
-		exit(-1);
+		return 1;
 	}
 	cout << filename << endl;
 	IndexedFaceSet initialMesh;
@@ -892,12 +1004,13 @@ int main(int argc, char *argv[])
 	//indexedFaceSets[3].GetTriangles() = indexedFaceSets[1].GetTriangles();
 
 	Mesh[3] = Mesh[1];
-	myinit();
+	//myinit();
 
-	glutDisplayFunc(draw);
-	glutKeyboardFunc(key);
-	glutReshapeFunc(reshape);
+	window.MainLoop();
+	//glutDisplayFunc(draw);
+	//glutKeyboardFunc(key);
+	//glutReshapeFunc(reshape);
 
-	glutMainLoop();
+	//glutMainLoop();
 	return 0;
 }
