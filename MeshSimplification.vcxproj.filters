@@ -32,5 +32,8 @@
     <ClInclude Include="Sources\imesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

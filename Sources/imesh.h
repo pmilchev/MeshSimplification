@@ -2,7 +2,10 @@
 #define __IMESH_H__
 
 #include <vector>
+#include <string>
 #include <algorithm> // min & max
+
+#include <iostream>
 #include "vector3.h"
 
 // used structures
@@ -29,6 +32,30 @@ public:
 	//private:
 	std::vector<Vector3> m_Vertices;
 	std::vector<Triangle> m_Triangles;
+};
+
+void error(const std::string & name);
+void LoadOffFile(const std::string& name, IndexedFaceSet& result);
+int simple_triangulation(const IndexedFaceSet& inMesh, IndexedFaceSet& outMesh);
+int decimation1(const std::vector<Vector3>& inVertices, const std::vector<Triangle>& inTriangles,
+	std::vector<Vector3>& outVertices, std::vector<Triangle>& outTriangles);
+int decimation2(const std::vector<Vector3>& inVertices, const std::vector<Triangle>& inTriangles,
+	std::vector<Vector3>& outVertices, std::vector<Triangle>& outTriangles);
+int rearangeTrianglesInFan(const std::vector<Triangle>& inTriangles, const int& v, std::vector <int>& trianglesOrder);
+
+int getVertRelative(int to, int offset, const Triangle& intriangle);
+float analyzeBoundaryVertex(const std::vector<Vector3>& inVertices,
+	int v, int v0, int v1);
+float analizeSimpleVertex(const std::vector<Vector3>& inVertices, const std::vector<Triangle>& inTriangles,
+	int ve, const std::vector<int>& faces);
+
+
+enum VertexClass
+{
+	Undefined = -1,
+	Complex = 0,
+	Boundary = 1,
+	Simple = 2
 };
 
 struct Edge
