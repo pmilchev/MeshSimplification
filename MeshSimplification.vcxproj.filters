@@ -21,9 +21,15 @@
     <ClCompile Include="Sources\vector3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\imesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\vector3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\imesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

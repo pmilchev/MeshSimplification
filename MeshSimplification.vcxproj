@@ -86,11 +86,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\imesh.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\vector3.h" />
+    <ClInclude Include="Sources\imesh.h" />
+    <ClInclude Include="Sources\vector3.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

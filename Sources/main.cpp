@@ -10,6 +10,7 @@
 #include <fstream>
 #include <algorithm>
 
+#include "imesh.h"
 #include "vector3.h"
 
 using namespace std;
@@ -26,30 +27,30 @@ void getNormal3V(const float& A1, const float& A2, const float& A3,
 	float& n1, float& n2, float& n3);
 
 
-// used structures
-struct Triangle{
-	vector<int> vertices;
-	int         color[3];
-	Triangle(){ color[0] = color[1] = color[2] = 1; };
-	Triangle(vector<int> vertices, int color[3]){ this->vertices = vertices; this->color[0] = color[0]; this->color[1] = color[1]; this->color[2] = color[2]; };
-};
-
-class IMesh
-{
-};
-
-class IndexedFaceSet : public IMesh
-{
-public:
-	const vector<Vector3>& GetVertices() const { return m_Vertices; }
-	const vector<Triangle>& GetTriangles() const { return m_Triangles; }
-
-	vector<Vector3>& GetVertices() { return m_Vertices; }
-	vector<Triangle>& GetTriangles() { return m_Triangles; }
-//private:
-	vector<Vector3> m_Vertices;
-	vector<Triangle> m_Triangles;
-};
+//// used structures
+//struct Triangle{
+//	vector<int> vertices;
+//	int         color[3];
+//	Triangle(){ color[0] = color[1] = color[2] = 1; };
+//	Triangle(vector<int> vertices, int color[3]){ this->vertices = vertices; this->color[0] = color[0]; this->color[1] = color[1]; this->color[2] = color[2]; };
+//};
+//
+//class IMesh
+//{
+//};
+//
+//class IndexedFaceSet : public IMesh
+//{
+//public:
+//	const vector<Vector3>& GetVertices() const { return m_Vertices; }
+//	const vector<Triangle>& GetTriangles() const { return m_Triangles; }
+//
+//	vector<Vector3>& GetVertices() { return m_Vertices; }
+//	vector<Triangle>& GetTriangles() { return m_Triangles; }
+////private:
+//	vector<Vector3> m_Vertices;
+//	vector<Triangle> m_Triangles;
+//};
 
 // global data
 static const unsigned MAX_FIGURES = 10;
@@ -379,34 +380,34 @@ float analyzeBoundaryVertex(const vector<Vector3>& inVertices,
 	float l = (verts[0] - verts[1]).len();
 	return 2.0f * area / l;
 }
-
-struct Edge
-{
-	Edge(int _v0 = 0, int _v1 = 0)
-	{
-		n = 0;
-		set(_v0, _v1);
-	}
-
-	void set(int _v0, int _v1)
-	{
-		v0 = max(_v0, _v1);
-		v1 = min(_v0, _v1);
-	}
-
-	bool operator==(const Edge & other) const
-	{
-		return v0 == other.v0 && v1 == other.v1;
-	}
-
-	bool operator<(const Edge & other) const
-	{
-		return (v0 < other.v0 || (v0 == other.v0 && v1 < other.v1));
-	}
-
-	int v0, v1;
-	int n;
-};
+//
+//struct Edge
+//{
+//	Edge(int _v0 = 0, int _v1 = 0)
+//	{
+//		n = 0;
+//		set(_v0, _v1);
+//	}
+//
+//	void set(int _v0, int _v1)
+//	{
+//		v0 = max(_v0, _v1);
+//		v1 = min(_v0, _v1);
+//	}
+//
+//	bool operator==(const Edge & other) const
+//	{
+//		return v0 == other.v0 && v1 == other.v1;
+//	}
+//
+//	bool operator<(const Edge & other) const
+//	{
+//		return (v0 < other.v0 || (v0 == other.v0 && v1 < other.v1));
+//	}
+//
+//	int v0, v1;
+//	int n;
+//};
 
 int decimation2(const vector<Vector3>& inVertices, const vector<Triangle>& inTriangles,
 	vector<Vector3>& outVertices, vector<Triangle>& outTriangles)
