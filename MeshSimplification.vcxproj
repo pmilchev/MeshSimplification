@@ -89,6 +89,7 @@
     <ClCompile Include="Sources\imesh.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\vector3.cpp" />
+    <ClCompile Include="Sources\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\imesh.h" />
