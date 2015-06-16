@@ -1,12 +1,5 @@
-//#include <math.h>
-//#include <stdlib.h>
-//#include <glut.h>
-//#include <freeglut.h>
-
-//#include <vector>
 #include <string>
 #include <iostream>
-//#include <algorithm>
 
 #include "imesh.h"
 #include "vector3.h"
@@ -15,18 +8,6 @@
 using std::cout;
 using std::endl;
 using std::string;
-
-// declaration of functions
-//void getNormal3V(const float& A1, const float& A2, const float& A3,
-//	const float& B1, const float& B2, const float& B3,
-//	const float& C1, const float& C2, const float& C3,
-//	float& n1, float& n2, float& n3);
-
-//bool in(const vector<int> & v, int x)
-//{
-//	for (unsigned i = 0; i < v.size(); i++) if (x == v[i]) return true;
-//	return false;
-//}
 
 int main(int argc, char *argv[])
 {
