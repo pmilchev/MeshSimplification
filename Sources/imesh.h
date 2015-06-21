@@ -3,12 +3,13 @@
 
 #include <vector>
 //#include <string>
-
 class string;
-//#include <algorithm> // min & max
 
+//#include <algorithm> // min & max
 //#include <iostream>
-#include "vector3.h"
+
+//#include "vector3.h"
+class Vector3;
 
 // used structures
 struct Triangle
@@ -63,26 +64,9 @@ enum VertexClass
 struct Edge
 {
 	Edge(int _v0 = 0, int _v1 = 0);
-	//{
-	//	n = 0;
-	//	set(_v0, _v1);
-	//}
-
 	void set(int _v0, int _v1);
-	//{
-	//	v0 = std::max(_v0, _v1);
-	//	v1 = std::min(_v0, _v1);
-	//}
-
 	bool operator==(const Edge & other) const;
-	//{
-	//	return v0 == other.v0 && v1 == other.v1;
-	//}
-
 	bool operator<(const Edge & other) const;
-	//{
-	//	return (v0 < other.v0 || (v0 == other.v0 && v1 < other.v1));
-	//}
 
 	int v0, v1;
 	int n;

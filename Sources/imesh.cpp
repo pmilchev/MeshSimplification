@@ -7,6 +7,7 @@
 #include <string>
 #include <deque>
 
+#include "vector3.h"
 
 using std::vector;
 using std::string;

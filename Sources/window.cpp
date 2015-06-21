@@ -1,5 +1,6 @@
 #include "window.h"
 
+#include "vector3.h"
 #include <algorithm> // max
 
 const float Window::RADIUS = 4.0f;
