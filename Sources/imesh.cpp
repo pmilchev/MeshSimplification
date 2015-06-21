@@ -556,3 +556,25 @@ float analyzeBoundaryVertex(const vector<Vector3>& inVertices,
 	float l = (verts[0] - verts[1]).len();
 	return 2.0f * area / l;
 }
+
+Edge::Edge(int _v0/* = 0*/, int _v1/* = 0*/)
+{
+	n = 0;
+	set(_v0, _v1);
+}
+
+void Edge::set(int _v0, int _v1)
+{
+	v0 = std::max(_v0, _v1);
+	v1 = std::min(_v0, _v1);
+}
+
+bool Edge::operator == (const Edge & other) const
+{
+	return v0 == other.v0 && v1 == other.v1;
+}
+
+bool Edge::operator<(const Edge & other) const
+{
+	return (v0 < other.v0 || (v0 == other.v0 && v1 < other.v1));
+}
