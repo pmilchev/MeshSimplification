@@ -2,10 +2,12 @@
 #define __IMESH_H__
 
 #include <vector>
-#include <string>
-#include <algorithm> // min & max
+//#include <string>
 
-#include <iostream>
+class string;
+//#include <algorithm> // min & max
+
+//#include <iostream>
 #include "vector3.h"
 
 // used structures

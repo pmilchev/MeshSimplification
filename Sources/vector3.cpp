@@ -1,5 +1,7 @@
 #include "vector3.h"
 
+#include <math.h> // sqrtf
+
 Vector3::Vector3() {}
 
 Vector3::Vector3(const Vector3& other)

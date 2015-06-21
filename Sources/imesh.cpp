@@ -2,7 +2,9 @@
 
 #include <algorithm> // min & max
 #include <fstream>
+#include <iostream>
 
+#include <string>
 #include <deque>
 
 

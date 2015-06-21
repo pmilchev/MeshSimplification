@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include <algorithm> // max
+
 const float Window::RADIUS = 4.0f;
 const float Window::angle = -60.f;
 

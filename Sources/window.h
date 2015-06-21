@@ -1,14 +1,7 @@
 #ifndef __WINDOW_H__
 #define __WINDOW_H__
 
-#include <stdlib.h>
 #include <glut.h>
-#include <freeglut.h>
-#include <algorithm> // min & max
-
-
-#include <vector>
-#include "vector3.h"
 
 #include "imesh.h"
 
